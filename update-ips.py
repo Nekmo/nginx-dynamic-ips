@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import ipaddress
 import socket
 import subprocess
@@ -75,7 +76,7 @@ def get_ips(files: Iterable[str]) -> Iterator[str]:
 @click.command()
 @click.argument('src', nargs=-1)
 @click.option('-o', '--output-file', type=click.Path(writable=True))
-@click.option('-r', '--run', type=click.Path(exists=True))
+@click.option('-r', '--run', type=click.Path(exists=True, resolve_path=True))
 @click.option('-l', '--loop-forever', type=int)
 def update_ips(src, output_file=None, run=None, loop_forever=None):
     """Read domain and ip files and generate an output compatible with Nginx
