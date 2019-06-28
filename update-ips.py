@@ -1,6 +1,7 @@
 import ipaddress
 import socket
 import subprocess
+import time
 from typing import Iterator, AnyStr, Iterable
 
 import click
@@ -75,7 +76,8 @@ def get_ips(files: Iterable[str]) -> Iterator[str]:
 @click.argument('src', nargs=-1)
 @click.option('-o', '--output-file', type=click.Path(writable=True))
 @click.option('-r', '--run', type=click.Path(exists=True))
-def update_ips(src, output_file=None, run=None):
+@click.option('-l', '--loop-forever', type=int)
+def update_ips(src, output_file=None, run=None, loop_forever=None):
     """Read domain and ip files and generate an output compatible with Nginx
     """
     last_out = ''
@@ -96,7 +98,11 @@ def update_ips(src, output_file=None, run=None):
     elif output_file and out != last_out and not run:
         # Output changed and run is undefined
         exit_code = 1
-    exit(exit_code)
+    if loop_forever:
+        time.sleep(loop_forever * 60)
+        update_ips(src, output_file, run, loop_forever)
+    else:
+        exit(exit_code)
 
 
 if __name__ == '__main__':
